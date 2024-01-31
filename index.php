@@ -53,7 +53,34 @@ body {
 </head>
 <body>
   <?php include 'header.php'; ?>
-<?php
+
+  <?php
+// 絵文字の画像URLを取得する関数
+function getEmojiImageUrl($emojiName) {
+    $apiUrl = "https://vocaloid.social/api/emoji?name=" . urlencode($emojiName);
+    $response = file_get_contents($apiUrl);
+
+    if ($response !== FALSE) {
+        $emojiData = json_decode($response, true);
+        if (isset($emojiData['url'])) {
+            return $emojiData['url'];
+        }
+    }
+    return null;
+}
+
+// テキスト内の絵文字を置き換える関数
+function replaceEmojis($text) {
+    preg_match_all("/:(.*?):/", $text, $matches);
+    foreach ($matches[1] as $emojiName) {
+        $imageUrl = getEmojiImageUrl($emojiName);
+        if ($imageUrl !== null) {
+            $text = str_replace(":$emojiName:", "<img src='$imageUrl' alt='$emojiName'>", $text);
+        }
+    }
+    return $text;
+}
+
 // POSTデータの準備
 $postData = [
     "withFiles" => false,
@@ -85,7 +112,11 @@ if ($response === FALSE) {
 
             echo "<div class='card'>";
             echo "<p><strong>{$note['user']['name']}</strong> @{$note['user']['username']}</p>";
-            echo "<p>" . ($note['text'] ?? $note['cw']) . "</p>"; // 投稿内容
+
+            // テキスト内の絵文字を置き換える
+            $text = replaceEmojis($note['text'] ?? $note['cw']);
+            echo "<p>$text</p>"; // 投稿内容
+
             echo "<p>" . date('Y/m/d H:i:s', strtotime($note['createdAt'])) . "</p>"; // 作成日時
             echo "<p style='text-align: right;'>投稿ID: $postID</p>"; // 投稿IDを表示
 
@@ -101,6 +132,7 @@ if ($response === FALSE) {
     }
 }
 ?>
+
 
 </body>
 </html>
