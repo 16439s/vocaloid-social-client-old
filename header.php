@@ -26,5 +26,16 @@
     <div>
         <a class="menu" href="/">Local Timeline</a>
         <a class="menu" href="/global.php">Global Timeline</a>
+        <?php
+        // CookieからTOKENを取得してチェック
+        if (isset($_COOKIE['token'])) {
+            // TOKENがある場合は投稿ページへのリンクを表示
+            echo '<a class="menu" href="/create.php">新規投稿</a>';
+            echo '<a class="menu" href="/logout.php">ログアウト</a>';
+        } else {
+            // TOKENがない場合はログインページへのリンクを表示
+            echo '<a class="menu" href="/login.php">ログイン</a>';
+        }
+        ?>
     </div>
 </div>
