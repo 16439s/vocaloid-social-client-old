@@ -6,7 +6,7 @@
         $appname = "Vocaloid.social Timeline";
         // インスタンス(仮にまた破壊した時のために変数化笑)
         $instance = "vocaloid.social";
-        $callback = "localhost:3000";
+        $callback = "client.16439s.jp";
         // $callback = "localhost:3000";
         // とりあえずアカウント情報の読み取りだけ
         $permissions = "read:account,write:notes";
@@ -27,7 +27,7 @@
         }
 
         $uuid = guidv4();
-        $url = "https://".$instance."/miauth/".$uuid."?name=".$appname."&callback=http://".$callback."/callback.php&permission=".$permissions;
+        $url = "https://".$instance."/miauth/".$uuid."?name=".$appname."&callback=https://".$callback."/callback.php&permission=".$permissions;
         // MiAuthのURLにリダイレクト
         header('Location: '.$url.'');
     }
