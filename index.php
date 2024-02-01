@@ -25,7 +25,7 @@ body {
 }
 
 .card img {
-    max-width: 100%;
+    width: 10em; /* 絵文字のサイズを24emに設定 */
     border-radius: 5px;
     margin-top: 10px;
 }
@@ -132,6 +132,7 @@ if ($response === FALSE) {
     }
 }
 ?>
+
 
 
 </body>
