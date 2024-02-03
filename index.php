@@ -28,6 +28,7 @@ body {
     width: 10em; /* 絵文字のサイズを24emに設定 */
     border-radius: 5px;
     margin-top: 10px;
+    max-width: 100%; /* 画像の幅を最大に */
 }
 
 .card strong {
@@ -81,9 +82,25 @@ function replaceEmojis($text) {
     return $text;
 }
 
+// 添付ファイルのURLを取得する関数
+function getAttachmentImageUrls($attachments) {
+    $imageUrls = [];
+    foreach ($attachments as $attachment) {
+        if (isset($attachment['url']) && isset($attachment['type']) && isImageType($attachment['type'])) {
+            $imageUrls[] = $attachment['url'];
+        }
+    }
+    return $imageUrls;
+}
+
+// 画像ファイルかどうかを確認する関数
+function isImageType($type) {
+    return substr($type, 0, 6) === 'image/';
+}
+
 // POSTデータの準備
 $postData = [
-    "withFiles" => false,
+    "withFiles" => true, // 添付ファイルを含める
     "withRenotes" => true,
     "withReplies" => false,
     "limit" => 30,
@@ -117,6 +134,13 @@ if ($response === FALSE) {
             $text = replaceEmojis($note['text'] ?? $note['cw']);
             echo "<p>$text</p>"; // 投稿内容
 
+            // 画像ファイルがあれば表示
+            $attachments = $note['files'] ?? [];
+            $imageUrls = getAttachmentImageUrls($attachments);
+            foreach ($imageUrls as $imageUrl) {
+                echo "<img src='$imageUrl' alt='Attached Image'>";
+            }
+
             echo "<p>" . date('Y/m/d H:i:s', strtotime($note['createdAt'])) . "</p>"; // 作成日時
             echo "<p style='text-align: right;'>投稿ID: $postID</p>"; // 投稿IDを表示
 
@@ -132,8 +156,6 @@ if ($response === FALSE) {
     }
 }
 ?>
-
-
 
 </body>
 </html>

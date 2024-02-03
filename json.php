@@ -1,13 +1,13 @@
 <?php
 // POSTデータの準備
 $postData = [
-    "withFiles" => false,
+    "withFiles" => true,
     "withRenotes" => true,
     "limit" => 30,
 ];
 
 // POSTリクエストを送信
-$apiUrl = "https://vocaloid.social/api/notes/global-timeline";
+$apiUrl = "https://vocaloid.social/api/notes/local-timeline";
 $options = [
     'http' => [
         'header' => "Content-type: application/json",
