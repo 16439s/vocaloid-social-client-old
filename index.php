@@ -98,11 +98,13 @@ function isImageType($type) {
     return substr($type, 0, 6) === 'image/';
 }
 
-// 画像をダウンロードしてメモリに一時保存し、そのデータをbase64エンコードして返す関数
+// 画像をダウンロードしてメモリに一時保存し、そのURLを返す関数
 function downloadImage($imageUrl) {
     $imageData = file_get_contents($imageUrl);
     if ($imageData !== false) {
-        return 'data:image/jpeg;base64,' . base64_encode($imageData);
+        $tempFileName = tempnam(sys_get_temp_dir(), 'img');
+        file_put_contents($tempFileName, $imageData);
+        return $tempFileName;
     }
     return null;
 }
@@ -147,10 +149,10 @@ if ($response === FALSE) {
             $attachments = $note['files'] ?? [];
             $imageUrls = getAttachmentImageUrls($attachments);
             foreach ($imageUrls as $imageUrl) {
-                // メモリに保存された画像データを表示
-                $imageData = downloadImage($imageUrl);
-                if ($imageData !== null) {
-                    echo "<img src='$imageData' alt='Attached Image'>";
+                // メモリに保存された画像のURLを取得
+                $tempImageUrl = downloadImage($imageUrl);
+                if ($tempImageUrl !== null) {
+                    echo "<img src='$tempImageUrl' alt='Attached Image'>";
                 }
             }
 
@@ -169,8 +171,6 @@ if ($response === FALSE) {
     }
 }
 ?>
-
-
 
 </body>
 </html>
