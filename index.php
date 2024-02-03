@@ -87,7 +87,8 @@ function getAttachmentImageUrls($attachments) {
     $imageUrls = [];
     foreach ($attachments as $attachment) {
         if (isset($attachment['url']) && isset($attachment['type']) && isImageType($attachment['type'])) {
-            $imageUrls[] = $attachment['url'];
+            // 画像ProxyのURLを使用する
+            $imageUrls[] = 'image_proxy.php?url=' . urlencode($attachment['url']);
         }
     }
     return $imageUrls;
@@ -96,17 +97,6 @@ function getAttachmentImageUrls($attachments) {
 // 画像ファイルかどうかを確認する関数
 function isImageType($type) {
     return substr($type, 0, 6) === 'image/';
-}
-
-// 画像をダウンロードしてメモリに一時保存し、そのURLを返す関数
-function downloadImage($imageUrl) {
-    $imageData = file_get_contents($imageUrl);
-    if ($imageData !== false) {
-        $tempFileName = tempnam(sys_get_temp_dir(), 'img');
-        file_put_contents($tempFileName, $imageData);
-        return $tempFileName;
-    }
-    return null;
 }
 
 // POSTデータの準備
@@ -149,11 +139,7 @@ if ($response === FALSE) {
             $attachments = $note['files'] ?? [];
             $imageUrls = getAttachmentImageUrls($attachments);
             foreach ($imageUrls as $imageUrl) {
-                // メモリに保存された画像のURLを取得
-                $tempImageUrl = downloadImage($imageUrl);
-                if ($tempImageUrl !== null) {
-                    echo "<img src='$tempImageUrl' alt='Attached Image'>";
-                }
+                echo "<img src='$imageUrl' alt='Attached Image'>";
             }
 
             echo "<p>" . date('Y/m/d H:i:s', strtotime($note['createdAt'])) . "</p>"; // 作成日時
