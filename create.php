@@ -5,15 +5,89 @@ include 'header.php';
 // Check if TOKEN exists in cookie
 if (!isset($_COOKIE['token'])) {
     echo "ログインされていません。3秒後に、トップページ(index.php)に戻ります。";
-    header("refresh:3;url=index.php");
+    echo "<meta http-equiv='refresh' content='3;url=index.php'>";
     exit;
 }
 
 // Get TOKEN from cookie
 $TOKEN = $_COOKIE['token'];
 
+// Initialize replyid variable
+$replyid = "";
+
+// Set replyid if value exists in POST data
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reply_id'])) {
+    $replyid = $_POST['reply_id'];
+}
+
+// Handle form submission
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Get input data
+    $text = $_POST['text'];
+    $visibility = $_POST['visibility'];
+
+    // Map visibility options
+    switch ($visibility) {
+        case 'パブリック':
+            $visibility = 'public';
+            break;
+        case 'ホーム':
+            $visibility = 'home';
+            break;
+        case 'フォロワー限定':
+            $visibility = 'followers';
+            break;
+        default:
+            $visibility = 'public';
+    }
+
+    // Prepare data for POST request
+    $data = array(
+        "i" => $TOKEN,
+        "text" => $text,
+        "visibility" => $visibility
+    );
+
+    // Add replyId if replyid is not empty
+    if (!empty($replyid)) {
+        $data['replyId'] = $replyid;
+    }
+
+    // URL to Vocaloid.social's notes create endpoint
+    $url = "https://vocaloid.social/api/notes/create";
+
+    // Initialize cURL session
+    $ch = curl_init($url);
+
+    // Set cURL options for POST request
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+
+    // Execute POST request
+    $result = curl_exec($ch);
+
+    // Check for errors and response
+    if ($result === false) {
+        echo "Error: " . curl_error($ch);
+    } else {
+        // Check HTTP status code
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if ($http_code == 200) {
+            echo "投稿が完了しました。5秒後にホーム(index.php)に戻ります。";
+            echo "<meta http-equiv='refresh' content='5;url=index.php'>";
+            exit;
+        } else {
+            echo "Error: Unexpected HTTP status code - " . $http_code;
+        }
+    }
+
+    // Close cURL session
+    curl_close($ch);
+}
 ?>
 
+<!-- CSS styles -->
 <style>
     /* Basic reset */
     * {
@@ -59,6 +133,15 @@ $TOKEN = $_COOKIE['token'];
         border-radius: 4px;
     }
 
+    /* Textbox styles */
+    input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
     /* Submit button styles */
     input[type="submit"] {
         display: block;
@@ -85,72 +168,9 @@ $TOKEN = $_COOKIE['token'];
     }
 </style>
 
-<?php
-
-// Handle form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get input data
-    $text = $_POST['text'];
-    $visibility = $_POST['visibility'];
-
-    // Map visibility options
-    switch ($visibility) {
-        case 'パブリック':
-            $visibility = 'public';
-            break;
-        case 'ホーム':
-            $visibility = 'home';
-            break;
-        case 'フォロワー限定':
-            $visibility = 'followers';
-            break;
-        default:
-            $visibility = 'public';
-    }
-
-    // Prepare data for POST request
-    $data = array(
-        "i" => $TOKEN,
-        "text" => $text,
-        "visibility" => $visibility
-    );
-
-    // URL to Vocaloid.social's notes create endpoint
-    $url = "https://vocaloid.social/api/notes/create";
-
-    // Initialize cURL session
-    $ch = curl_init($url);
-
-    // Set cURL options for POST request
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-
-    // Execute POST request
-    $result = curl_exec($ch);
-
-    // Check for errors and response
-    if ($result === false) {
-        echo "Error: " . curl_error($ch);
-    } else {
-        // Check HTTP status code
-        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        if ($http_code == 200) {
-            echo "投稿が完了しました。5秒後にホーム(index.php)に戻ります。";
-            header("refresh:5;url=index.php");
-        } else {
-            echo "Error: Unexpected HTTP status code - " . $http_code;
-        }
-    }
-
-    // Close cURL session
-    curl_close($ch);
-}
-
-?>
-
 <!-- HTML form -->
 <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+    <input type="text" name="reply_id" value="<?php echo htmlspecialchars($replyid); ?>" placeholder="リプライする投稿ID (リプライする場合のみ)">
     <textarea name="text"></textarea><br>
     <select name="visibility">
         <option value="パブリック">パブリック</option>
