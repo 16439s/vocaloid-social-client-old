@@ -32,10 +32,10 @@ body {
 }
 
 .card img {
-    width: 10em; /* 絵文字のサイズを24emに設定 */
+    max-width: 1em; /* 絵文字のサイズを調整 */
     border-radius: 5px;
     margin-top: 10px;
-    max-width: 100%; /* 画像の幅を最大に */
+    height: auto; /* 高さを自動調整 */
 }
 
 .card strong {
