@@ -1,3 +1,8 @@
+<?php
+// Load font size from cookie or set default
+$fontsize = isset($_COOKIE['fontsize']) ? $_COOKIE['fontsize'] : 'medium';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +15,7 @@ body {
     background-color: #f0f2f5;
     margin: 0;
     padding: 20px;
+    font-size: <?php echo $fontsize; ?>;
 }
 
 .card {
