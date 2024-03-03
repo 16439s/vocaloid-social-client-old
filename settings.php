@@ -53,9 +53,9 @@ button:hover {
   <form method="post">
     <label for="fontsize">Font Size:</label>
     <select name="fontsize" id="fontsize">
-      <option value="small">Small</option>
-      <option value="medium">Medium</option>
-      <option value="large">Large</option>
+        <option value="small" <?php if(isset($_COOKIE['fontsize']) && $_COOKIE['fontsize'] === 'small') echo 'selected'; ?>>Small</option>
+        <option value="medium" <?php if(!isset($_COOKIE['fontsize']) || $_COOKIE['fontsize'] === 'medium') echo 'selected'; ?>>Medium</option>
+        <option value="large" <?php if(isset($_COOKIE['fontsize']) && $_COOKIE['fontsize'] === 'large') echo 'selected'; ?>>Large</option>
     </select>
     <button type="submit">Save</button>
   </form>

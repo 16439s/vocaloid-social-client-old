@@ -73,6 +73,7 @@
     <div class="menu-links">
         <a class="menu" href="/">Local Timeline</a>
         <a class="menu" href="/global.php">Global Timeline</a>
+        <a class="menu" href="/settings.php">Settings</a>
         <?php
         if (isset($_COOKIE['token'])) {
             echo '<a class="menu" href="/create.php">新規投稿</a>';
