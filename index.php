@@ -32,10 +32,18 @@ body {
 }
 
 .card img {
-    max-width: 5em; /* 絵文字のサイズを調整 */
+    max-width: 10em; /* 絵文字のサイズを調整 */
+    border-radius: 5px;
+    margin-top: 10px;
+    max-width: 100%; /* 画像の幅を最大に */
+}
+
+.emoji {
+    max-width: 3em; /* 絵文字のサイズを調整 */
     border-radius: 5px;
     margin-top: 10px;
     height: auto; /* 高さを自動調整 */
+    /* その他の絵文字に適用したいスタイルを追加 */
 }
 
 .card strong {
@@ -83,7 +91,8 @@ function replaceEmojis($text) {
     foreach ($matches[1] as $emojiName) {
         $imageUrl = getEmojiImageUrl($emojiName);
         if ($imageUrl !== null) {
-            $text = str_replace(":$emojiName:", "<img src='$imageUrl' alt='$emojiName'>", $text);
+            // 絵文字に適用するCSSクラスを追加
+            $text = str_replace(":$emojiName:", "<img src='$imageUrl' alt='$emojiName' class='emoji'>", $text);
         }
     }
     return $text;
