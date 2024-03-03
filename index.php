@@ -39,7 +39,7 @@ body {
 }
 
 .emoji {
-    max-width: 2em; /* 絵文字のサイズを調整 */
+    max-width: 1em; /* 絵文字のサイズを調整 */
     border-radius: 5px;
     margin-top: 10px;
     height: auto; /* 高さを自動調整 */
